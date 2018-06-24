@@ -41,6 +41,22 @@
             android:paddingTop="@dimen/size_5dp"
             android:paddingBottom="@dimen/size_5dp"/>
 
+        <ToggleButton
+            android:id="@+id/btn_is_movie_favorite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/cardview_light_background"
+            android:button="@drawable/ic_not_fav"
+            android:textOff=""
+            android:textOn=""/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/size_1dp"
+            android:background="@color/colorPrimary"
+            android:paddingTop="@dimen/size_5dp"
+            android:paddingBottom="@dimen/size_5dp"/>
+
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -124,5 +140,65 @@
             android:textStyle="bold"
             android:justificationMode="inter_word"
             android:text="@string/text_description"/>
+
+        <View android:layout_width="match_parent"
+            android:layout_height="@dimen/size_1dp"
+            android:background="@color/colorPrimary"
+            android:paddingTop="@dimen/size_5dp"
+            android:paddingBottom="@dimen/size_5dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TRAILERS"
+            android:gravity="start|bottom"
+            android:background="@color/cardview_dark_background"
+            android:textColor="@color/cardview_light_background"
+            android:textSize="@dimen/text_size_large"
+            android:textStyle="bold"/>
+
+        <View android:layout_width="match_parent"
+            android:layout_height="@dimen/size_1dp"
+            android:background="@color/colorPrimary"
+            android:paddingTop="@dimen/size_5dp"
+            android:paddingBottom="@dimen/size_5dp"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/trailers_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <View android:layout_width="match_parent"
+            android:layout_height="@dimen/size_1dp"
+            android:background="@color/colorPrimary"
+            android:paddingTop="@dimen/size_5dp"
+            android:paddingBottom="@dimen/size_5dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="REVIEWS"
+            android:gravity="start|bottom"
+            android:background="@color/cardview_dark_background"
+            android:textColor="@color/cardview_light_background"
+            android:textSize="@dimen/text_size_large"
+            android:textStyle="bold"/>
+
+        <View android:layout_width="match_parent"
+            android:layout_height="@dimen/size_1dp"
+            android:background="@color/colorPrimary"
+            android:paddingTop="@dimen/size_5dp"
+            android:paddingBottom="@dimen/size_5dp"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/reviews_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <View android:layout_width="match_parent"
+            android:layout_height="@dimen/size_1dp"
+            android:background="@color/colorPrimary"
+            android:paddingTop="@dimen/size_5dp"
+            android:paddingBottom="@dimen/size_5dp"/>
     </LinearLayout>
 </ScrollView>

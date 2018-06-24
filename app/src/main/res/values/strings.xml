@@ -2,12 +2,15 @@
     <string name="app_name">Popular movies (stage 2)</string>
     <string name="details">Movie details</string>
     <string name="key_movies_parcel">KEY_MOVIES_PARCEL</string>
+    <string name="key_reviews_parcel">KEY_REVIEWS_PARCEL</string>
+    <string name="key_trailers_parcel">KEY_TRAILERS_PARCEL</string>
     <string name="key_single_movie_parcel">KEY_SINGLE_MOVIE_PARCEL</string>
-    <string name="movie_db_api_key">{YOUR_API_KEY_GOES_HERE}</string>
+    <string name="movie_db_api_key">{YOUR_TMDB_API_KEY_GOES_HERE}</string>
     <string name="error_occurred_while_parsing">Error occurred while was parsing Json string</string>
     <string name="no_internet_connection">Internet connection is not available</string>
     <string name="preferences_popular_sort">SORT_KEY_POPULAR</string>
     <string name="preferences_top_rated_sort">SORT_KEY_TOP_RATED</string>
+    <string name="preferences_my_favorites_sort">SORT_KEY_MY_FAVORITES</string>
     <string name="sp_sort_key">SHARED_PREFERENCES_SORT_KEY</string>
     <string name="video_title">Video title…</string>
     <string name="content_description">content description…</string>
@@ -21,4 +24,8 @@
     <string name="text_release_date">release date…</string>
     <string name="text_average_vote">average vote…</string>
     <string name="text_description">description…</string>
+    <string name="label_author">author:</string>
+    <string name="label_review">review:</string>
+    <string name="play">play</string>
+    <string name="share">share</string>
 </resources>

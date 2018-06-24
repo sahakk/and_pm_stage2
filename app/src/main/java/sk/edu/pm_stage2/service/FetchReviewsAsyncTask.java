@@ -2,6 +2,7 @@ package sk.edu.pm_stage2.service;
 
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -16,29 +17,28 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import sk.edu.pm_stage2.storage.model.MovieModel;
+import sk.edu.pm_stage2.storage.model.ReviewModel;
 
-public class FetchMoviesAsyncTask extends AsyncTask<String, Void, MovieModel[]>
+public class FetchReviewsAsyncTask extends AsyncTask<String, Void, ReviewModel[]>
     implements AbstractAsyncTask {
-  private static final String TAG_NAME = FetchMoviesAsyncTask.class.getSimpleName();
+  private static final String TAG_NAME = FetchReviewsAsyncTask.class.getName();
+  public static final int REVIEW_ALLOWED_LENGTH = 200;
 
   private String apiKey;
   private final OnFetchTaskCompleted listener;
 
-  public FetchMoviesAsyncTask(OnFetchTaskCompleted listener, final String apiKey) {
-    super();
-    this.listener = listener;
+  public FetchReviewsAsyncTask(OnFetchTaskCompleted listener, final String apiKey) {
     this.apiKey = apiKey;
+    this.listener = listener;
   }
 
   @Override
-  protected MovieModel[] doInBackground(String... params) {
+  protected ReviewModel[] doInBackground(String... params) {
     HttpURLConnection urlConnection = null;
     BufferedReader reader = null;
-    String jsonString = null;
-
+    String jsonString;
     try {
-      URL url = buildApiUrl(params);
+      URL url = buildReviewsUrl(params);
       urlConnection = (HttpURLConnection)url.openConnection();
       urlConnection.setRequestMethod(HTTP_METHOD_GET);
       urlConnection.setConnectTimeout(CONNECTION_TIMEOUT);
@@ -52,8 +52,8 @@ public class FetchMoviesAsyncTask extends AsyncTask<String, Void, MovieModel[]>
       String line;
       while ((line = reader.readLine()) != null) {
         builder.
-            append(line).
-            append(NEW_LINE);
+          append(line).
+          append(NEW_LINE);
       }
       if (builder.length() == 0) {
         return null;
@@ -75,7 +75,7 @@ public class FetchMoviesAsyncTask extends AsyncTask<String, Void, MovieModel[]>
       }
     }
     try {
-      return getMoviesDataFromJson(jsonString);
+      return getReviewsFromJson(jsonString);
     } catch (JSONException e) {
       Log.e(TAG_NAME, e.getMessage(), e);
       e.printStackTrace();
@@ -83,39 +83,48 @@ public class FetchMoviesAsyncTask extends AsyncTask<String, Void, MovieModel[]>
     return null;
   }
 
-  private MovieModel[] getMoviesDataFromJson(final String jsonString) throws JSONException {
+  private ReviewModel[] getReviewsFromJson(String jsonString) throws JSONException {
     final JSONObject moviesJson = new JSONObject(jsonString);
     final JSONArray resultsArray = moviesJson.getJSONArray(TAG_RESULTS);
-    MovieModel[] movies = new MovieModel[resultsArray.length()];
-    for (int i = 0; i < resultsArray.length(); i++) {
-      movies[i] = new MovieModel();
-      JSONObject entityJson = resultsArray.getJSONObject(i);
-      movies[i].setMovieId(entityJson.optString(TAG_MOVIE_ID, EMPTY_STRING));
-      movies[i].setTitle(entityJson.optString(TAG_ORIGINAL_TITLE, EMPTY_STRING));
-      movies[i].setImagePath(entityJson.optString(TAG_POSTER_PATH, EMPTY_STRING));
-      final String releaseDateStr = entityJson.optString(TAG_RELEASE_DATE, EMPTY_STRING);
-      movies[i].setReleaseDate(Utils.convertStringToDate(releaseDateStr, Utils.MILITARY_SHORT_FORMAT));
-      movies[i].setDescription(entityJson.optString(TAG_OVERVIEW, EMPTY_STRING));
-      movies[i].setAverageVote(entityJson.optDouble(TAG_VOTE_AVERAGE, 0));
+    int arrayLength;
+    if (resultsArray == null || resultsArray.length() == 0) {
+      arrayLength = 0;
+    } else {
+      if (resultsArray.length() < 5) {
+        arrayLength = resultsArray.length();
+      } else {
+        arrayLength = 5;
+      }
     }
-    return movies;
+    ReviewModel[] reviews = new ReviewModel[arrayLength];
+    for (int i = 0; i < arrayLength; i++) {
+      reviews[i] = new ReviewModel();
+      JSONObject entityJson = resultsArray.getJSONObject(i);
+      reviews[i].setAuthor(entityJson.optString(TAG_AUTHOR, EMPTY_STRING));
+      String text = entityJson.optString(TAG_CONTENT, EMPTY_STRING);
+      if (!TextUtils.isEmpty(text) && text.length() > REVIEW_ALLOWED_LENGTH) {
+        reviews[i].setReviewText(text.substring(0, REVIEW_ALLOWED_LENGTH) + "...");
+      } else {
+        reviews[i].setReviewText(text);
+      }
+    }
+    return reviews;
   }
 
-  private URL buildApiUrl(String[] parameters) throws MalformedURLException {
+  private URL buildReviewsUrl(String[] params) throws MalformedURLException {
+    final String movieId = params[0];
     Uri builtUri = Uri.
-        parse(THE_MOVIE_DB_URL).
+        parse(THE_MOVIE_DB_URL + movieId + "/reviews").
         buildUpon().
-        appendEncodedPath(parameters[0]).
         appendQueryParameter(PARAM_API_KEY, apiKey).
         appendQueryParameter(PARAM_LANGUAGE, PARAM_LANGUAGE_VALUE).
-        appendQueryParameter(PARAM_PAGE, PAGE_VALUE).
         build();
     return new URL(builtUri.toString());
   }
 
   @Override
-  protected void onPostExecute(MovieModel[] movies) {
-    super.onPostExecute(movies);
-    listener.onFetchTaskCompleted(movies);
+  protected void onPostExecute(ReviewModel[] reviews) {
+    super.onPostExecute(reviews);
+    listener.onFetchTaskCompleted(reviews);
   }
 }

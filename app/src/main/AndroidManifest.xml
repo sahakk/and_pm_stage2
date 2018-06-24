@@ -29,5 +29,9 @@
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="sk.edu.pm_stage2.ui.MainActivity"/>
         </activity>
+        <provider
+            android:authorities="sk.edu.pm_stage2"
+            android:name="sk.edu.pm_stage2.repository.movie.MovieContentProvider"
+            android:exported="false" />
     </application>
 </manifest>

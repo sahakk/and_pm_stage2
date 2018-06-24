@@ -15,43 +15,45 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import sk.edu.pm_stage2.R;
-import sk.edu.pm_stage2.storage.entity.MovieEntity;
+import sk.edu.pm_stage2.storage.model.MovieModel;
 import sk.edu.pm_stage2.ui.DetailsActivity;
 
 public class MovieImageAdapter extends RecyclerView.Adapter<MovieImageAdapter.ViewHolder> {
   private static final String TAG = MovieImageAdapter.class.getName();
-  private final MovieEntity[] moviesArray;
+  private final MovieModel[] movies;
   private final Context mContext;
+  private final int imageHeight;
+  private final int imageWidth;
+  private final String parcelKey;
 
-  // for stage 2 and "infinite scrolling"/"lazy loading"
-  // private OnBottomViewClickListener onBottomViewClickListener;
-
-  public MovieImageAdapter(Context context, MovieEntity[] array) {
-    moviesArray = array;
+  public MovieImageAdapter(Context context, MovieModel[] array) {
+    movies = array;
     mContext = context;
+    imageHeight = mContext.getResources().getInteger(R.integer.W_185_HEIGHT);
+    imageWidth = mContext.getResources().getInteger(R.integer.W_185_WIDTH);
+    parcelKey = mContext.getResources().getString(R.string.key_single_movie_parcel);
   }
 
   @NonNull
   @Override
   public MovieImageAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-    View v = LayoutInflater.
-        from(parent.getContext()).
-        inflate(R.layout.list_item, parent, false);
-    MovieImageAdapter.ViewHolder holder = new MovieImageAdapter.ViewHolder(v);
+    View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
+    ViewHolder holder = new ViewHolder(v);
     return holder;
   }
 
   @Override
   public void onBindViewHolder(@NonNull MovieImageAdapter.ViewHolder holder, final int position) {
     try{
-      final MovieEntity movie = moviesArray[position];
+      if (movies == null || movies.length == 0) {
+        return;
+      }
+      final MovieModel movie = movies[position];
       holder.movieTitle.setText(movie.getTitle());
-      final String imagePath = moviesArray[position].getImageFullPath();
-      Picasso.with(mContext).
-          load(imagePath).
-          resize(
-              mContext.getResources().getInteger(R.integer.W_185_WIDTH),
-              mContext.getResources().getInteger(R.integer.W_185_HEIGHT)).
+      Picasso.
+          with(mContext).
+          load(movies[position].getImageFullPath()).
+          resize(imageWidth, imageHeight).
           error(R.drawable.not_found).
           placeholder(R.drawable.searching).
           into(holder.moviePoster);
@@ -59,8 +61,8 @@ public class MovieImageAdapter extends RecyclerView.Adapter<MovieImageAdapter.Vi
         @Override
         public void onClick(View view) {
           Intent intent = new Intent(mContext, DetailsActivity.class);
-          intent.putExtra(mContext.getResources().
-              getString(R.string.key_single_movie_parcel), movie);
+          intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+          intent.putExtra(parcelKey, movie);
           mContext.startActivity(intent);
         }
       });
@@ -71,15 +73,14 @@ public class MovieImageAdapter extends RecyclerView.Adapter<MovieImageAdapter.Vi
 
   @Override
   public int getItemCount() {
-    return moviesArray.length;
+    return movies == null ? 0 : movies.length;
   }
 
-  public MovieEntity getMovieAtPosition(final int position) {
-    if (moviesArray == null || moviesArray.length == 0 ||
-        position < 0 || position >= moviesArray.length) {
+  public MovieModel getMovieAtPosition(final int position) {
+    if (movies == null || movies.length == 0 || position < 0 || position >= movies.length) {
       return null;
     }
-    return moviesArray[position];
+    return movies[position];
   }
 
   protected static class ViewHolder extends RecyclerView.ViewHolder {
