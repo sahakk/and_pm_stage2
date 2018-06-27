@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Popular movies (stage 2)</string>
     <string name="details">Movie details</string>
+    <string name="key_scroll_view_positions">KEY_SCROLL_VIEW_POSITIONS</string>
     <string name="key_movies_parcel">KEY_MOVIES_PARCEL</string>
     <string name="key_reviews_parcel">KEY_REVIEWS_PARCEL</string>
     <string name="key_trailers_parcel">KEY_TRAILERS_PARCEL</string>

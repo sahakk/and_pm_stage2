@@ -44,7 +44,7 @@ public class MovieImageAdapter extends RecyclerView.Adapter<MovieImageAdapter.Vi
 
   @Override
   public void onBindViewHolder(@NonNull MovieImageAdapter.ViewHolder holder, final int position) {
-    try{
+    try {
       if (movies == null || movies.length == 0) {
         return;
       }

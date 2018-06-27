@@ -11,11 +11,14 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 
 import sk.edu.pm_stage2.R;
 import sk.edu.pm_stage2.adapter.ReviewsAdapter;
@@ -32,6 +35,7 @@ import sk.edu.pm_stage2.storage.model.TrailerModel;
 public class DetailsActivity extends AppCompatActivity {
   private String apiKey;
 
+  private ScrollView scrollView;
   private ImageView imagePoster;
   private TextView movieTitle;
   private TextView releaseDate;
@@ -53,6 +57,7 @@ public class DetailsActivity extends AppCompatActivity {
   }
 
   private void initializeComponent(Bundle savedInstanceState) {
+    scrollView = findViewById(R.id.details_scroll_view);
     imagePoster = findViewById(R.id.image_view_movie_poster);
     movieTitle = findViewById(R.id.text_view_movie_title);
     releaseDate = findViewById(R.id.text_view_release_date);
@@ -225,7 +230,22 @@ public class DetailsActivity extends AppCompatActivity {
       }
       saveBundle.putParcelableArray(getString(R.string.key_trailers_parcel), trailers);
     }
+    final int[] scrollViewPositions = new int[] { scrollView.getScrollX(), scrollView.getScrollY() };
+    saveBundle.putIntArray(getString(R.string.key_scroll_view_positions), scrollViewPositions);
     super.onSaveInstanceState(saveBundle);
+  }
+
+  @Override
+  protected void onRestoreInstanceState(Bundle savedInstanceState) {
+    super.onRestoreInstanceState(savedInstanceState);
+    final int[] positions =
+        savedInstanceState.getIntArray(getString(R.string.key_scroll_view_positions));
+    if(positions != null)
+      scrollView.post(new Runnable() {
+        public void run() {
+          scrollView.scrollTo(positions[0], positions[1]);
+        }
+    });
   }
 
   private void loadReviews() {

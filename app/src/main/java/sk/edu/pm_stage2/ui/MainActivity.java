@@ -1,5 +1,7 @@
 package sk.edu.pm_stage2.ui;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -19,7 +21,6 @@ import sk.edu.pm_stage2.service.FetchMoviesAsyncTask;
 import sk.edu.pm_stage2.service.OnFetchTaskCompleted;
 import sk.edu.pm_stage2.service.Utils;
 import sk.edu.pm_stage2.storage.model.MovieModel;
-//import sk.edu.pm_stage2.storage.enums.MovieSortOrder;
 
 public class MainActivity extends AppCompatActivity {
   private static final String TAG = MainActivity.class.getName();
@@ -95,6 +96,15 @@ public class MainActivity extends AppCompatActivity {
     super.onSaveInstanceState(saveBundle);
   }
 
+  @Override
+  protected void onResume() {
+    super.onResume();
+    if (getSelectedSortMode().equalsIgnoreCase(MY_FAVORITES)) {
+      getMoviesFromExternalDB(MY_FAVORITES);
+    }
+  }
+
+  /* Private methods */
   private void initComponents(Bundle savedInstanceState) {
     recyclerView = findViewById(R.id.moviesRecyclerView);
     layoutManager = new GridLayoutManager(getApplicationContext(), 2);
