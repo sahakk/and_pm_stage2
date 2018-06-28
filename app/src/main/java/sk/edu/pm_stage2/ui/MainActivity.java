@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -87,9 +88,13 @@ public class MainActivity extends AppCompatActivity {
   protected void onSaveInstanceState(Bundle saveBundle) {
     final int moviesCount = recyclerView.getChildCount();
     if (moviesCount > 0) {
-      MovieModel[] movies = new MovieModel[moviesCount];
-      for (int i = 0; i < moviesCount; i++) {
-        movies[i] = ((MovieImageAdapter)recyclerView.getAdapter()).getMovieAtPosition(i);
+      final MovieImageAdapter adapter = (MovieImageAdapter)recyclerView.getAdapter();
+      final MovieModel[] sourceMovies = adapter.getAllAdapterMovies();
+      MovieModel[] movies = new MovieModel[sourceMovies.length];
+      // If instead of Array I would have List (preferably Set<>/HashSet<>) process would be more
+      // efficient.
+      for (int i = 0, l = sourceMovies.length; i < l; i++) {
+        movies[i] = sourceMovies[i];
       }
       saveBundle.putParcelableArray(getString(R.string.key_movies_parcel), movies);
     }
@@ -107,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
   /* Private methods */
   private void initComponents(Bundle savedInstanceState) {
     recyclerView = findViewById(R.id.moviesRecyclerView);
-    layoutManager = new GridLayoutManager(getApplicationContext(), 2);
+    layoutManager = new GridLayoutManager(getApplicationContext(), calculateGridColumns());
     if (savedInstanceState == null) {
       getMoviesFromExternalDB(getSelectedSortMode());
     } else {
@@ -126,8 +131,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void updateMenu() {
-    String sortOrder = getSelectedSortMode();
-
+    final String sortOrder = getSelectedSortMode();
     if (sortOrder.equalsIgnoreCase(MOST_POPULAR)) {
       mainMenu.findItem(R.string.preferences_popular_sort).setEnabled(false);
       mainMenu.findItem(R.string.preferences_top_rated_sort).setEnabled(true);
@@ -149,6 +153,22 @@ public class MainActivity extends AppCompatActivity {
       return MOST_POPULAR;
     }
     return preferences.getString(getString(R.string.sp_sort_key), MOST_POPULAR);
+  }
+
+  private static final int widthDivider = 400;
+  private static final int defaultColumnsNumber = 2;
+
+  /* Mentor's suggested function to dynamically calculate grid elements display width. */
+  private int calculateGridColumns() {
+    DisplayMetrics displayMetrics = new DisplayMetrics();
+    getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+    // You can change this divider to adjust the size of the poster
+    final int width = displayMetrics.widthPixels;
+    final int nColumns = width / widthDivider;
+    if (nColumns < defaultColumnsNumber) {
+      return defaultColumnsNumber; //to keep the grid aspect
+    }
+    return nColumns;
   }
 
   private void updateSharedPreferences(final String sortMethod) {

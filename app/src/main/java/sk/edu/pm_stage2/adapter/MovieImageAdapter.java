@@ -83,6 +83,10 @@ public class MovieImageAdapter extends RecyclerView.Adapter<MovieImageAdapter.Vi
     return movies[position];
   }
 
+  public MovieModel[] getAllAdapterMovies() {
+    return movies;
+  }
+
   protected static class ViewHolder extends RecyclerView.ViewHolder {
     private final TextView movieTitle;
     private final ImageView moviePoster;
